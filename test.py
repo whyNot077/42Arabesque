@@ -46,13 +46,15 @@ def create_arabesque(input_text):
     # Melody part
     melody_part = stream.Part()
     melody_part.id = 'melody'
-    melody_part.insert(0, instrument.Piano())  # Specify instrument
+    piano = instrument.Piano()
+    melody_part.insert(0, piano)  # Specify instrument
+
 
     # Accompaniment part
     accompaniment_part = stream.Part()
     accompaniment_part.id = 'accompaniment'
-    accompaniment_part.insert(0, instrument.Piano())  # Specify instrument
-
+    piano_accompaniment = instrument.Piano()
+    accompaniment_part.insert(0, piano_accompaniment)
     measure_length = 3  # Each measure is 3 quarter lengths in 9/8 time
 
     # Generate melody and accompaniment
@@ -74,7 +76,7 @@ def create_arabesque(input_text):
 
             # Melody: create a more expressive line
             melody_notes = []
-            melody_pattern = [0, 2, 4, 6, 8, 7, 5, 3, 1]
+            melody_pattern = [0, 2, 4, 6, 6, 7, 8, 8, 7]
             for k in range(len(melody_pattern)):
                 idx = melody_pattern[k] % num_notes
                 m = note.Note(arpeggio_notes[idx])
