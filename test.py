@@ -19,6 +19,7 @@ chord_dict = {
     "A": ["A2", "C#3", "E3", "A3", "C#4", "E4", "A4", "C#5", "E5", "A5"],
     "A#": ["A#2", "D3", "F3", "A#3", "D4", "F4", "A#4", "D5", "F5", "A#5"],
     "B": ["B2", "D#3", "F#3", "B3", "D#4", "F#4", "B4", "D#5", "F#5", "B5"],
+    "Bd": ["B2", "D3", "F3", "B3", "D4", "F4", "B4", "D5", "F5", "B5"],  # 추가된 부분
     # Minor chords
     "Cm": ["C2", "D#2", "G2", "C3", "D#3", "G3", "C4", "D#4", "G4", "C5"],
     "C#m": ["C#2", "E2", "G#2", "C#3", "E3", "G#3", "C#4", "E4", "G#4", "C#5"],
@@ -32,13 +33,15 @@ chord_dict = {
     "Am": ["A2", "C3", "E3", "A3", "C4", "E4", "A4", "C5", "E5", "A5"],
     "A#m": ["A#2", "C#3", "F3", "A#3", "C#4", "F4", "A#4", "C#5", "F5", "A#5"],
     "Bm": ["B2", "D3", "F#3", "B3", "D4", "F#4", "B4", "D5", "F#5", "B5"],
+    "Bdm": ["B2", "Db3", "F3", "B3", "Db4", "F4", "B4", "Db5", "F5", "B5"],  # 추가된 부분 (B♭ minor)
 }
+
 
 def create_arabesque(input_text):
     chord_names = input_text.split()[:8]  # Use only the first 8 chords
     score = stream.Score()
     score.append(tempo.MetronomeMark(number=88))  # Tempo for the highlight section
-    score.append(meter.TimeSignature('9/8'))  # Time signature remains the same
+    score.append(meter.TimeSignature('4/4'))  # Time signature remains the same
 
     # Melody part
     melody_part = stream.Part()
@@ -113,7 +116,7 @@ def convert_midi_to_mp3(midi_file, mp3_file, soundfont_path):
     print(f"{mp3_file} has been created.")
 
 # Updated input with a more natural chord progression
-input_text = "Em D G C Am Bm Em D"
+input_text = "C G Bd F G C Em G"
 
 # Generate the arabesque highlight-style piece
 score = create_arabesque(input_text)
