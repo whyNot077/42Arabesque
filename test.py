@@ -6,26 +6,29 @@ from pydub import AudioSegment
 
 # Extended chord dictionary with pitches for accompaniment
 chord_dict = {
+    # Cello chords
     # Major chords
-    "C": ["C2", "E2", "G2", "C3", "E3", "G3", "C4", "E4", "G4", "C5"],
+    # "C": ["C2", "E2", "G2", "C3", "E3", "G3", "C4", "E4", "G4", "C5"],
+    "C": ["C2", "D2", "E2", "G2", "C3", "D3", "E3", "F3", "G3", "A3", "B3"],
     "C#": ["C#2", "F2", "G#2", "C#3", "F3", "G#3", "C#4", "F4", "G#4", "C#5"],
     "D": ["D2", "F#2", "A2", "D3", "F#3", "A3", "D4", "F#4", "A4", "D5"],
     "D#": ["D#2", "G2", "A#2", "D#3", "G3", "A#3", "D#4", "G4", "A#4", "D#5"],
     "E": ["E2", "G#2", "B2", "E3", "G#3", "B3", "E4", "G#4", "B4", "E5"],
-    "F": ["F2", "A2", "C3", "F3", "A3", "C4", "F4", "A4", "C5", "F5"],
+   # "F": ["F2", "A2", "C3", "F3", "A3", "C4", "F4", "A4", "C5", "F5"],
+    "F": ["F2", "G2", "A2", "C3", "F3", "G3", "B3", "C4", "D4", "E4"],
     "F#": ["F#2", "A#2", "C#3", "F#3", "A#3", "C#4", "F#4", "A#4", "C#5", "F#5"],
     "G": ["G2", "B2", "D3", "G3", "B3", "D4", "G4", "B4", "D5", "G5"],
     "G#": ["G#2", "C3", "D#3", "G#3", "C4", "D#4", "G#4", "C5", "D#5", "G#5"],
     "A": ["A2", "C#3", "E3", "A3", "C#4", "E4", "A4", "C#5", "E5", "A5"],
     "A#": ["A#2", "D3", "F3", "A#3", "D4", "F4", "A#4", "D5", "F5", "A#5"],
     "B": ["B2", "D#3", "F#3", "B3", "D#4", "F#4", "B4", "D#5", "F#5", "B5"],
-    "Bd": ["B2", "D3", "F3", "B3", "D4", "F4", "B4", "D5", "F5", "B5"],  # 추가된 부분
+    "Bd": ["B1", "D2", "F2", "B2", "D3", "F3", "B3", "D4", "F4", "B4"],
     # Minor chords
     "Cm": ["C2", "D#2", "G2", "C3", "D#3", "G3", "C4", "D#4", "G4", "C5"],
     "C#m": ["C#2", "E2", "G#2", "C#3", "E3", "G#3", "C#4", "E4", "G#4", "C#5"],
     "Dm": ["D2", "F2", "A2", "D3", "F3", "A3", "D4", "F4", "A4", "D5"],
     "D#m": ["D#2", "F#2", "A#2", "D#3", "F#3", "A#3", "D#4", "F#4", "A#4", "D#5"],
-    "Em": ["E2", "G2", "B2", "E3", "G3", "B3", "E4", "G4", "B4", "E5"],
+    "Em": ["E2", "F2", "G2", "B2", "E3", "F3", "G3", "A3", "B3", "C4", "E4"],
     "Fm": ["F2", "G#2", "C3", "F3", "G#3", "C4", "F4", "G#4", "C5", "F5"],
     "F#m": ["F#2", "A2", "C#3", "F#3", "A3", "C#4", "F#4", "A4", "C#5", "F#5"],
     "Gm": ["G2", "A#2", "D3", "G3", "A#3", "D4", "G4", "A#4", "D5", "G5"],
@@ -46,15 +49,13 @@ def create_arabesque(input_text):
     # Melody part
     melody_part = stream.Part()
     melody_part.id = 'melody'
-    piano = instrument.Piano()
-    melody_part.insert(0, piano)  # Specify instrument
-
+    melody_part.insert(0, instrument.Piano())  # Specify instrument
 
     # Accompaniment part
     accompaniment_part = stream.Part()
     accompaniment_part.id = 'accompaniment'
-    piano_accompaniment = instrument.Piano()
-    accompaniment_part.insert(0, piano_accompaniment)
+    accompaniment_part.insert(0, instrument.Piano())  # Specify instrument
+
     measure_length = 3  # Each measure is 3 quarter lengths in 9/8 time
 
     # Generate melody and accompaniment
@@ -67,16 +68,19 @@ def create_arabesque(input_text):
             num_notes = len(arpeggio_notes)
 
             # Accompaniment: flowing arpeggios covering multiple octaves
-            for j in range(num_notes):
-                n = note.Note(arpeggio_notes[j])
-                n.duration.quarterLength = measure_length / num_notes  # Evenly distribute notes
+            accompaniment_notes = []
+            accompaniment_pattern = [0, 1, 2, 3, 4, 3, 2, 3, 2, 1]
+            for j in range(len(accompaniment_pattern)):
+                idy = accompaniment_pattern[j] % num_notes
+                n = note.Note(arpeggio_notes[idy])
+                n.duration.quarterLength = measure_length / len(accompaniment_pattern)
                 n.offset = i * measure_length + (j * n.duration.quarterLength)
                 n.volume = volume.Volume(velocity=90)  # Increased volume for accompaniment
-                accompaniment_part.append(n)
+                accompaniment_notes.append(n)
 
             # Melody: create a more expressive line
             melody_notes = []
-            melody_pattern = [0, 2, 4, 6, 6, 7, 8, 8, 7]
+            melody_pattern = [4, 5, 6, 7, 7, 6, 10, 9, 8]
             for k in range(len(melody_pattern)):
                 idx = melody_pattern[k] % num_notes
                 m = note.Note(arpeggio_notes[idx])
@@ -97,7 +101,9 @@ def create_arabesque(input_text):
                 dim = dynamics.Diminuendo()
                 dim.offset = melody_notes[0].offset
                 melody_part.insert(dim)
-
+            
+            for n in accompaniment_notes:
+                accompaniment_part.append(n)
             for m in melody_notes:
                 melody_part.append(m)
         else:
